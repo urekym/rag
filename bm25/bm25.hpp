@@ -32,9 +32,9 @@ public:
   search(const std::vector<std::string> &query_tokens, int top_k);
 
   void save_model(const std::string &filepath);
-  void laod_model(const std::string &filepath);
+  void load_model(const std::string &filepath);
 
-  ~BM25() = default
+  ~BM25() = default;
 };
 
 #endif
