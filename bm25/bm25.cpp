@@ -30,7 +30,8 @@ void BM25::fit(const std::vector<std::vector<std::string>> &corpus) {
   long long total_ln = 0;
 
   // loop through each document
-  for (int i = 0; i < num_docs_; i++) {
+  for (size_t i = 0; i < num_docs_; i++)
+  {
     const std::vector<std::string> &doc = corpus[i];
     doc_lengths_[i] = doc.size();
     total_ln += doc.size();
@@ -38,7 +39,8 @@ void BM25::fit(const std::vector<std::vector<std::string>> &corpus) {
     std::unordered_map<std::string, int> term_counts;
 
     // count term frequencyies for this document
-    for (int j = 0; j < doc.size(); j++) {
+    for (size_t j = 0; j < doc.size(); j++)
+    {
       std::string word = doc[j];
       term_counts[word]++;
     }
@@ -50,7 +52,8 @@ void BM25::fit(const std::vector<std::vector<std::string>> &corpus) {
     */
     std::set<std::string> unique_words(doc.begin(), doc.end());
     for (std::set<std::string>::iterator it = unique_words.begin();
-         it != unique_words.end(); ++it) {
+         it != unique_words.end(); ++it)
+    {
       doc_frequencies[*it]++;
     }
   }
@@ -63,7 +66,8 @@ void BM25::fit(const std::vector<std::vector<std::string>> &corpus) {
 
   for (std::unordered_map<std::string, int>::iterator it =
            doc_frequencies.begin();
-       it != doc_frequencies.end(); ++it) {
+       it != doc_frequencies.end(); ++it)
+  {
     std::string word = it->first;
     int df = it->second;
 
@@ -71,5 +75,74 @@ void BM25::fit(const std::vector<std::vector<std::string>> &corpus) {
     double bottom = static_cast<double>(df) + 0.5;
     double idf_val = std::log((top / bottom) + 1.0);
     idf_[word] = (idf_val > 0.0) ? idf_val : 0.0;
+  }
+}
+
+
+
+/// now the search, retrieve part 
+/// ill write about it in md file
+std::vector<std::pair<int, double>> BM25::search(const std::vector<std::string> &query_tokens, int top_k){
+  std::vector<double> scores(num_docs_, 0.0);
+
+  for (int q = 0; q < query_tokens.size(); q++)
+  {
+    std::string word =query_tokens[q];
+
+
+    if (idf_.find(word) == idf_.end())
+      continue;
+
+    double idf_val = idf_[word];
+
+    for (size_t i = 0; i < num_docs_; i++)
+    {
+      if (doc_term_freqs_[i].find(word) == doc_term_freqs_[i].end())
+        continue;
+
+      int freq = doc_term_freqs_[i][word];
+      double doc_len = static_cast<double>(doc_lengths_[i]);
+
+      double numerator = freq * (k_ + 1.0);
+      double length_norm = 1.0 - b_ + b_ * (doc_len);
+      double denominator = freq + k_ * length_norm;
+
+      scores[i] += idf_val * (numerator / denominator);
+    }
+  }
+
+  std::vector<std::pair<int, double>> results;
+  for (size_t i = 0; i < num_docs_; i++)
+  {
+    if (scores[i] > 0.0)
+      results.push_back(std::make_pair(static_cast<int>(i), scores[i]));
+  }
+
+  for (size_t i =0; i < results.size(); i++)
+  {
+    for (size_t j = i + 1; j < results.size(); j++)
+    {
+      if (results[j].second > results[i].second)
+      {
+        std::pair<int, double> temp = results[i];
+        results[i] = results[j];
+        results[j] = temp;
+      }
+    }
+  }
+
+  if (results.size() > static_cast<size_t>(top_k))
+    results.resize(top_k);
+
+  return results;
+}
+
+void  BM25::load_model(const std::string &filepath)
+{
+  std::fstream file(filepath);
+  if (file.is_open())
+  {
+    file >> num_docs_ >> avgdl_ >> k_ >> b_;
+    file.close();
   }
 }
