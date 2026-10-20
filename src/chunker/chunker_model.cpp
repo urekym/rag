@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "json/include/nlohmann/json.hpp"
+#include "../json/include/nlohmann/json.hpp"
 
 using namespace std;
 using json = nlohmann::json;
