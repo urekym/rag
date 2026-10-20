@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+using namespace std;
+
 class BM25 {
 private:
   double k_;
@@ -13,9 +15,9 @@ private:
   double avgdl_;
   size_t num_docs_;
 
-  std::vector<size_t> doc_lengths_;
-  std::vector<std::unordered_map<std::string, int>> doc_term_freqs_;
-  std::unordered_map<std::string, double> idf_;
+  vector<size_t> doc_lengths_;
+  vector<unordered_map<string, int>> doc_term_freqs_;
+  unordered_map<string, double> idf_;
 
 public:
   /*
@@ -27,12 +29,12 @@ public:
   BM25(double k = 1.2, double b = 0.75);
 
   // the core methods
-  void fit(const std::vector<std::vector<std::string>> &corpus);
-  std::vector<std::pair<int, double>>
-  search(const std::vector<std::string> &query_tokens, int top_k);
+  void fit(const vector<vector<string>> &corpus);
+  vector<pair<int, double>>
+  search(const vector<string> &query_tokens, int top_k);
 
-  void save_model(const std::string &filepath);
-  void load_model(const std::string &filepath);
+  void save_model(const string &filepath);
+  void load_model(const string &filepath);
 
   ~BM25() = default;
 };
