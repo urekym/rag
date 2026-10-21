@@ -11,7 +11,7 @@ int main() {
         cout << "No files found! Check your path.\n";
         return 0;
     }
-    bool found_minecraft = false;
+    /*bool found_minecraft = false;
     for (size_t i = 0; i < file_paths.size(); i++) {
       if (file_paths[i].find("Minecraft") != string::npos) {
           cout << "Found Minecraft file at index: " << i << " -> " << file_paths[i] << "\n";
@@ -20,6 +20,7 @@ int main() {
     }
     if (!found_minecraft) {
       cout << "WARNING: Minecraft/README.md was NOT found by get_all_files!\n";
+    */
 }
     vector<vector<string>> corpus;
 
