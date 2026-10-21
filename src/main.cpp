@@ -21,7 +21,7 @@ int main() {
     if (!found_minecraft) {
       cout << "WARNING: Minecraft/README.md was NOT found by get_all_files!\n";
     */
-}
+
     vector<vector<string>> corpus;
 
     // Read and tokenize every file into the corpus
